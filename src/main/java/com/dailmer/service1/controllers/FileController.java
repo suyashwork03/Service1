@@ -11,18 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dailmer.service1.config.DataSanitization;
 import com.dailmer.service1.models.EmployeeOuterClass.Employee;
 import com.dailmer.service1.services.FileService;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import reactor.core.publisher.Mono;
 
 @RestController
 public class FileController {
@@ -41,8 +38,8 @@ public class FileController {
 	public Publisher<String> store(@RequestBody Employee employee)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, IOException {
 
-		return rSocketRequester.route("Save.File").data(fileService.convertToString(employee))
-				.retrieveMono(String.class);
+		return rSocketRequester.route("Save.File")
+				.data(fileService.convertToString(DataSanitization.filterxss(employee))).retrieveMono(String.class);
 
 	}
 
@@ -53,8 +50,8 @@ public class FileController {
 	public Publisher<String> update(@RequestBody Employee employee)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, IOException {
 
-		return rSocketRequester.route("Update.File").data(fileService.convertToString(employee))
-				.retrieveMono(String.class);
+		return rSocketRequester.route("Update.File")
+				.data(fileService.convertToString(DataSanitization.filterxss(employee))).retrieveMono(String.class);
 	}
 
 	/**
@@ -67,17 +64,7 @@ public class FileController {
 	public ResponseEntity<Object> read(@RequestBody Map<String, Object> request)
 			throws InvalidProtocolBufferException, IOException {
 
-		return new ResponseEntity<>(fileService.getData(request), HttpStatus.OK);
+		return new ResponseEntity<>(fileService.getData(DataSanitization.filterxss(request)), HttpStatus.OK);
 	}
-
-	/*
-	 * @RequestMapping(value = "/store", consumes = "application/json", produces =
-	 * "text/plain", method = RequestMethod.PUT) public ResponseEntity<Object>
-	 * save(@RequestBody Employee employee) throws IOException,
-	 * NoSuchPaddingException, NoSuchAlgorithmException {
-	 * 
-	 * return new ResponseEntity<>(fileService.storeData(employee), HttpStatus.OK);
-	 * }
-	 */
 
 }

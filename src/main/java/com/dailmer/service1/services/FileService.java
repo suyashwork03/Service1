@@ -6,17 +6,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.dailmer.service1.models.EmployeeOuterClass.Employee;
 import com.dailmer.service2.models.DataModel;
@@ -42,22 +39,6 @@ public class FileService {
 
 	private static SecretKeySpec secretKey;
 	private static byte[] key;
-
-	/**
-	 * Method to encrypt Employee data and Convert to Google Buffer Protocol String
-	 * 
-	 * @param employee
-	 * @return Google Buffer Protocol String Equivalent of Employee
-	 */
-	public String convertToString(Employee employee) {
-		setKey();
-		String data = encrypt(employee.toByteArray());
-		return data;
-	}
-	public String decryptString(String val) {
-		setKey();
-		return decrypt(val.getBytes()).toString();
-	}
 
 	/**
 	 * Method to get Data from Service2
@@ -151,18 +132,16 @@ public class FileService {
 		return null;
 	}
 
-	/*
-	 * public String storeData(Employee employee) throws IOException,
-	 * NoSuchAlgorithmException, NoSuchPaddingException { setKey(); String data =
-	 * encrypt(employee.toByteArray());
+	/**
+	 * Method to encrypt Employee data and Convert to Google Buffer Protocol String
 	 * 
-	 * okhttp3.RequestBody requestBody =
-	 * okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/x-protobuf"),
-	 * data); Request httpRequest = new Request.Builder().url(service2URL +
-	 * "storeFile").put(requestBody).build(); Response response =
-	 * client.newCall(httpRequest).execute();
-	 * 
-	 * return response.body().string(); }
+	 * @param employee
+	 * @return Google Buffer Protocol String Equivalent of Employee
 	 */
+	public String convertToString(Employee employee) {
+		setKey();
+		String data = encrypt(employee.toByteArray());
+		return data;
+	}
 
 }

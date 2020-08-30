@@ -41,14 +41,6 @@ public class FileController {
 	public Publisher<String> store(@RequestBody Employee employee)
 			throws NoSuchAlgorithmException, NoSuchPaddingException, IOException {
 
-		/*
-		 * Mono<String> res =
-		 * rSocketRequester.route("Save.File").data(fileService.convertToString(employee
-		 * )) .retrieveMono(String.class);
-		 * System.out.println(fileService.decryptString(res.block().toString())); return
-		 * "reg";
-		 */
-
 		return rSocketRequester.route("Save.File").data(fileService.convertToString(employee))
 				.retrieveMono(String.class);
 
